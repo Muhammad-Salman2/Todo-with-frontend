@@ -5,20 +5,24 @@ import toast from "react-hot-toast";
 
 function App() {
   const BASE_URL = "http://localhost:5001";
-  
+
   const [todos, setTodos] = useState();
-  console.log("ye todos he",todos)
-  const [isEditing, setIsEdeting] = useState();
+  // console.log("ye todos he", todos);
 
   const getTodo = async () => {
-    const response = await axios(`${BASE_URL}/api/v1/todos`);
-    const todosfromServer = response?.data?.data;
-    // console.log("todosfromServer", todosfromServer);
+    try {
+      const response = await axios(`${BASE_URL}/api/v1/todos`);
+      const todosfromServer = response?.data?.data;
+      // console.log("todosfromServer", todosfromServer);
 
-    const newNew = todosfromServer.map((todo)=>{
-      return{...todo , isEditing: false}
-    })
-    setTodos(newNew);
+      const newNew = todosfromServer.map((todo) => {
+        return { ...todo, isEditing: false };
+      });
+      setTodos(newNew);
+    } catch (error) {
+      toast.dismiss();
+      toast.error(res.error?.response.data?.message || "unknown error");
+    }
   };
 
   useEffect(() => {
@@ -37,9 +41,35 @@ function App() {
       getTodo();
       event.target.reset();
     } catch (error) {
-      console.log(error);
+      toast.dismiss();
+      toast.error(res.error?.response.data?.message || "unknown error");
     }
   };
+
+
+
+  const editTodo = async (event,todoid) => {
+    try {
+      event.preventDefault();
+      const todoValue = event.target.children[0].value;
+      // console.log(todoValue);
+      const { data } = await axios.patch(`${BASE_URL}/api/v1/todo/${todoid}`, {
+        todoContent: todoValue,
+      });
+
+      getTodo();
+      event.target.reset();
+    } catch (error) {
+      toast.dismiss();
+      toast.error(res.error?.response.data?.message || "unknown error");
+    }
+  };
+
+
+
+
+
+
 
   const deleteTodo = async (todoId) => {
     try {
@@ -75,30 +105,68 @@ function App() {
         {/* jb todo list empty ho hogi to ye show hoga */}
         {/* {!todos.length && "List is empty"}  */}
         <ul className="space-y-5">
-          {todos?.map((todo,index) => (
+          {todos?.map((todo, index) => (
             <li
               key={todo.id}
               className="flex justify-between items-center bg-gray-700 p-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl"
             >
-               {!isEditing ? <span className="text-lg text-gray-300">{todo.todoContent}</span>:
-               <input type="text" />
-               }
-              <div className="space-x-4">
-                <button 
-                onClick={() => {
-                  todos[index].isEditing = true ;
-
-                  setTodos([...todos])
-                }}
-                className="text-indigo-400 hover:text-indigo-500 transition duration-300">
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  className="text-red-400 hover:text-red-500 transition duration-300"
+              {!todo?.isEditing ? (
+                <span className="text-lg text-gray-300">
+                  {todo.todoContent}
+                </span>
+              ) : (
+                <form
+                onSubmit={(event) => editTodo(event,todo.id)}
                 >
-                  Delete
-                </button>
+                  <input
+                    type="text"
+                    defaultValue={todo.todoContent}
+                    className="text-black"
+                  />
+                  <button
+                    onClick={() => {
+                      const newTodos = todos.map((todo, i) => {
+                        todo.isEditing = false;
+                        return todo;
+                      });
+                      setTodos([...newTodos]);
+                    }}
+                    type="button"
+                  >
+                    cencel
+                  </button>
+                  <button type="submit">Save</button>
+                </form>
+              )}
+              <div className="space-x-4">
+                {!todo.isEditing ? (
+                  <button
+                    onClick={() => {
+                      const newTodo = todos.map((todo, i) => {
+                        if (i === index) {
+                          todo.isEditing = true;
+                        } else {
+                          todo.isEditing = false;
+                        }
+                        return todo;
+                      });
+                      todos[index].isEditing = true;
+
+                      setTodos([...newTodo]);
+                    }}
+                    className="text-indigo-400 hover:text-indigo-500 transition duration-300"
+                  >
+                    Edit
+                  </button>
+                ) : null }
+                {!todo.isEditing ? (
+                  <button
+                    onClick={() => deleteTodo(todo.id)}
+                    className="text-red-400 hover:text-red-500 transition duration-300"
+                  >
+                    Delete
+                  </button>
+                ) : null }
               </div>
             </li>
           ))}
