@@ -11,17 +11,19 @@ function App() {
 
   const getTodo = async () => {
     try {
-      const response = await axios(`${BASE_URL}/api/v1/todos`);
-      const todosfromServer = response?.data?.data;
+      const res = await axios(`${BASE_URL}/api/v1/todos`);
+      console.log("he he response", res)
+
+      const todosfromServer = res?.data?.data;
       // console.log("todosfromServer", todosfromServer);
 
-      const newNew = todosfromServer.map((todo) => {
-        return { ...todo, isEditing: false };
-      });
-      setTodos(newNew);
+      // const newNew = todosfromServer.map((todo) => {
+      //   return { ...todo, isEditing: false };
+      // });
+      setTodos(todosfromServer);
     } catch (error) {
       toast.dismiss();
-      toast.error(res.error?.response.data?.message || "unknown error");
+      toast.error(res?.error?.response?.data?.message || "unknown error");
     }
   };
 
@@ -34,7 +36,7 @@ function App() {
       event.preventDefault();
       const todoValue = event.target.children[0].value;
       // console.log(todoValue);
-      const { data } = await axios.post(`${BASE_URL}/api/v1/todo`, {
+        await axios.post(`${BASE_URL}/api/v1/todo`, {
         todo: todoValue,
       });
 
@@ -42,7 +44,7 @@ function App() {
       event.target.reset();
     } catch (error) {
       toast.dismiss();
-      toast.error(res.error?.response.data?.message || "unknown error");
+      toast.error(res?.error?.response.data?.message || "unknown error");
     }
   };
 
@@ -53,7 +55,7 @@ function App() {
       event.preventDefault();
       const todoValue = event.target.children[0].value;
       // console.log(todoValue);
-      const { data } = await axios.patch(`${BASE_URL}/api/v1/todo/${todoid}`, {
+      const res = await axios.patch(`${BASE_URL}/api/v1/todo/${todoid}`, {
         todoContent: todoValue,
       });
 
