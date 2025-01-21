@@ -12,7 +12,7 @@ function App() {
   const getTodo = async () => {
     try {
       const res = await axios(`${BASE_URL}/api/v1/todos`);
-      console.log("he he response", res)
+      // console.log("he he response", res)
 
       const todosfromServer = res?.data?.data;
       // console.log("todosfromServer", todosfromServer);
