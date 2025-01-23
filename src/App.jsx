@@ -12,10 +12,10 @@ function App() {
   const getTodo = async () => {
     try {
       const res = await axios(`${BASE_URL}/api/v1/todos`);
-      // console.log("he he response", res)
+      console.log("he he response", res)
 
       const todosfromServer = res?.data?.data;
-      // console.log("todosfromServer", todosfromServer);
+      console.log("todosfromServer", todosfromServer);
 
       // const newNew = todosfromServer.map((todo) => {
       //   return { ...todo, isEditing: false };
@@ -23,7 +23,7 @@ function App() {
       setTodos(todosfromServer);
     } catch (error) {
       toast.dismiss();
-      toast.error(res?.error?.response?.data?.message || "unknown error");
+      // toast.error(res?.error?.response?.data?.message || "unknown error");
     }
   };
 
@@ -44,7 +44,7 @@ function App() {
       event.target.reset();
     } catch (error) {
       toast.dismiss();
-      toast.error(res?.error?.response.data?.message || "unknown error");
+      // toast.error(res?.error?.response.data?.message || "unknown error");
     }
   };
 
@@ -109,7 +109,7 @@ function App() {
         <ul className="space-y-5">
           {todos?.map((todo, index) => (
             <li
-              key={todo.id}
+              key={todo._id}
               className="flex justify-between items-center bg-gray-700 p-5 rounded-2xl shadow-xl transition-all hover:shadow-2xl"
             >
               {!todo?.isEditing ? (
@@ -118,7 +118,7 @@ function App() {
                 </span>
               ) : (
                 <form
-                onSubmit={(event) => editTodo(event,todo.id)}
+                onSubmit={(event) => editTodo(event,todo._id)}
                 >
                   <input
                     type="text"
@@ -163,7 +163,7 @@ function App() {
                 ) : null }
                 {!todo.isEditing ? (
                   <button
-                    onClick={() => deleteTodo(todo.id)}
+                    onClick={() => deleteTodo(todo._id)}
                     className="text-red-400 hover:text-red-500 transition duration-300"
                   >
                     Delete
