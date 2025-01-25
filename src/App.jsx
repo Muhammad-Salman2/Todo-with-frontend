@@ -17,9 +17,7 @@ function App() {
       const todosfromServer = res?.data?.data;
       console.log("todosfromServer", todosfromServer);
 
-      // const newNew = todosfromServer.map((todo) => {
-      //   return { ...todo, isEditing: false };
-      // });
+    
       setTodos(todosfromServer);
     } catch (error) {
       toast.dismiss();
@@ -43,6 +41,7 @@ function App() {
       getTodo();
       event.target.reset();
     } catch (error) {
+      console.log(error)
       toast.dismiss();
       // toast.error(res?.error?.response.data?.message || "unknown error");
     }
